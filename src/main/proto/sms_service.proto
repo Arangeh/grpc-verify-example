@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.sms.grpc";
+option java_outer_classname = "SmsServiceProto";
+
+package sms;
+
+// SMS Signing Service for creating digital signatures on messages
+service SmsSigningService {
+  // Sign a single SMS payload and return a signed request
+  rpc SignSms(SmsRequest) returns (SmsSigningResponse);
+
+  // Sign bulk SMS messages in stream
+  rpc SignBulkSms(stream SmsRequest) returns (BulkSigningResponse);
+}
+
+// SMS Verification Service for verifying signed messages
+service SmsVerificationService {
+  // Verify a single signed SMS
+  rpc VerifySms(SmsRequest) returns (SmsVerificationResponse);
+
+  // Verify bulk SMS messages in stream
+  rpc VerifyBulkSms(stream SmsRequest) returns (BulkVerificationResponse);
+}
+
+// SMS Request with payload and digital signature
+message SmsRequest {
+  SmsPayload payload = 1;
+  string messageSignature = 2;
+}
+
+// SMS Payload containing the actual message data
+message SmsPayload {
+  string messageId = 1;
+  string sender = 2;
+  string recipient = 3;
+  string content = 4;
+  int64 timestamp = 5;
+  MessagePriority priority = 6;
+  map<string, string> metadata = 7;
+}
+
+// SMS Signing Response
+message SmsSigningResponse {
+  string messageId = 1;
+  bool success = 2;
+  string statusMessage = 3;
+  int64 signedAt = 4;
+}
+
+// Bulk Signing Response
+message BulkSigningResponse {
+  int32 totalProcessed = 1;
+  int32 successful = 2;
+  int32 failed = 3;
+  repeated string failedMessageIds = 4;
+}
+
+// SMS Verification Response
+message SmsVerificationResponse {
+  string messageId = 1;
+  bool verified = 2;
+  string statusMessage = 3;
+  int64 verifiedAt = 4;
+  VerificationStatus status = 5;
+}
+
+// Bulk Verification Response
+message BulkVerificationResponse {
+  int32 totalProcessed = 1;
+  int32 verified = 2;
+  int32 failed = 3;
+  repeated string failedMessageIds = 4;
+}
+
+// Message priority levels
+enum MessagePriority {
+  NORMAL = 0;
+  HIGH = 1;
+  URGENT = 2;
+}
+
+// Verification status
+enum VerificationStatus {
+  VALID = 0;
+  INVALID_SIGNATURE = 1;
+  MISSING_SIGNATURE = 2;
+  MISSING_PAYLOAD = 3;
+  VERIFICATION_ERROR = 4;
+}
