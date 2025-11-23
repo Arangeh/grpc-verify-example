@@ -278,6 +278,10 @@ The service provides comprehensive logging:
 - `WARN`: Invalid requests, failed verifications
 - `ERROR`: Exceptions and errors
 
+## Related Projects
+
+- [grpc-sign-example](https://github.com/Arangeh/grpc-sign-example) - The companion Signer Service that signs SMS messages and sends them to this Verifier Service
+
 ## License
 
 This is a sample project for educational purposes.
